@@ -1,0 +1,101 @@
+---
+# - name: run jupyter
+#   containers.podman.podman_container:
+#     name: jupyter-lab
+#     image: registry.hub.docker.com/rancavil/slurm-jupyter:19.05.5-1
+#     state: "{{ state }}"
+#     ports:
+#       - 8888:8888
+# docker network create -d bridge test
+# docker run -p 22 --rm -ti --name u1 --network test ubuntu:v2 bash 
+# docker run -p 22 --rm -ti --name u2 --network test ubuntu:v2 bash
+# - name: Create a podman network
+#   containers.podman.podman_network:
+#     name: podman_network
+
+# - name: run login-node
+#   containers.podman.podman_container:
+#     name: login-node
+#     image: localhost/login-node:0.0.0
+#     hostname: loginnode
+#     state: "{{ state }}"
+#     etc_hosts:
+#       other: "127.0.0.1"
+#     ports:
+#       - "7788:7788"
+#     # network: podman_network
+#     network: slurm_default
+
+        # TODO(asmacdo) need to make ports configurable. do they need to be in containerfile at all?
+# - name: run login-node2
+#   containers.podman.podman_container:
+#     name: login-node2
+#     image: localhost/login-node:0.0.0
+#     hostname: loginnode
+#     state: "{{ state }}"
+#     etc_hosts:
+#       other: "127.0.0.1"
+#     ports:
+#       - "7799:7799"
+# #     network: podman_network
+# #
+
+# - name: run jupyternode
+#     name: slurmjupyter
+#     hostname: slurmjupyter
+#     user: admin
+#     volumes:
+#       - shared-vol:/home/admin
+#     ports:
+#       - 8888:8888
+- name: Create scheduler node
+  containers.podman.podman_container:
+    state: "{{ state }}"
+    name: slurmmaster
+    image: rancavil/slurm-master:19.05.5-1
+    hostname: slurmmaster
+    user: admin
+    volumes:
+      - shared-vol:/home/admin
+    ports:
+      - 6817:6817
+      - 6818:6818
+      - 6819:6819
+    network: slurm_default
+
+- name: Create compute node
+  containers.podman.podman_container:
+    state: "{{ state }}"
+    name: slurmnode1
+    image: rancavil/slurm-node:19.05.5-1
+    hostname: slurmnode1
+    user: admin
+    volumes:
+      - shared-vol:/home/admin
+    env:
+      SLURM_NODENAME: slurmnode1
+    network: slurm_default
+    # links:
+    #   - slurmmaster
+#   slurmnode2:
+#         image: rancavil/slurm-node:19.05.5-1
+#         hostname: slurmnode2
+#         user: admin
+#         volumes:
+#                 - shared-vol:/home/admin
+#         environment:
+#                 - SLURM_NODENAME=slurmnode2
+#         links:
+#                 - slurmmaster
+#   slurmnode3:
+#         image: rancavil/slurm-node:19.05.5-1
+#         hostname: slurmnode3
+#         user: admin
+#         volumes:
+#                 - shared-vol:/home/admin
+#         environment:
+#                 - SLURM_NODENAME=slurmnode3
+#         links:
+#                 - slurmmaster
+# volumes:
+#         shared-vol:

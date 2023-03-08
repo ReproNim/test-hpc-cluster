@@ -1,0 +1,13 @@
+---
+# Simulates an environment like Darmouth's SLURM
+- name: Set up a discovery-like cluster
+  hosts: localhost
+  # vars:
+    # custom image tags
+    # custom images
+    # custom ports
+    # custom node names
+    # custom environments [LONG TERM, provisioning will be annoying,probably
+    #                       best to build custom images]
+  roles:
+    - slurm
