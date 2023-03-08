@@ -1,4 +1,3 @@
-admin@slurmmaster:~$ cat sample.slurm 
 #!/bin/bash
 #SBATCH --job-name=serial_job_test    # Job name
 #SBATCH --mail-type=NONE # Mail events (NONE, BEGIN, END, FAIL, ALL)
